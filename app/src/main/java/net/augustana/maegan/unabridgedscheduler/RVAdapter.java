@@ -1,5 +1,7 @@
 package net.augustana.maegan.unabridgedscheduler;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +26,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.EventViewHolder>{
     }
 
     @Override
-    public EventViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+    public EventViewHolder onCreateViewHolder(final ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item, viewGroup, false);
         EventViewHolder holder = new EventViewHolder(v);
         return holder;
@@ -34,6 +36,17 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.EventViewHolder>{
     public void onBindViewHolder(EventViewHolder personViewHolder, int i) {
         personViewHolder.event.setText(events.get(i).name);
         personViewHolder.date.setText(events.get(i).date);
+        final Event item = events.get(i);
+        final Context context = personViewHolder.itemView.getContext();
+        personViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, EventActivity.class);
+                intent.putExtra("event", item.name);
+                intent.putExtra("date", item.date);
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
