@@ -21,8 +21,10 @@ public class EventActivity extends AppCompatActivity {
         Intent intent = this.getIntent();
         String event = intent.getStringExtra("event");
         String date = intent.getStringExtra("date");
+        String desc = intent.getStringExtra("desc");
 
         eventText.setText(event, TextView.BufferType.NORMAL);
         dateText.setText(date, TextView.BufferType.NORMAL);
+        descriptionText.setText(desc, TextView.BufferType.NORMAL);
     }
 }

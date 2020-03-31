@@ -44,6 +44,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.EventViewHolder>{
                 Intent intent = new Intent(context, EventActivity.class);
                 intent.putExtra("event", item.name);
                 intent.putExtra("date", item.date);
+                intent.putExtra("desc", item.desc);
                 context.startActivity(intent);
             }
         });

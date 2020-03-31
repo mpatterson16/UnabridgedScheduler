@@ -24,9 +24,9 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(manager);
 
         List<Event> events = new ArrayList<>();
-        events.add(new Event("event1", "date1"));
-        events.add(new Event("event2", "date2"));
-        events.add(new Event("event3", "date3"));
+        events.add(new Event("event1", "date1", "a"));
+        events.add(new Event("event2", "date2", "b"));
+        events.add(new Event("event3", "date3", "c"));
 
         RVAdapter adapter = new RVAdapter(events);
         recyclerView.setAdapter(adapter);
