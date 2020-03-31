@@ -33,12 +33,12 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.EventViewHolder>{
     }
 
     @Override
-    public void onBindViewHolder(EventViewHolder personViewHolder, int i) {
-        personViewHolder.event.setText(events.get(i).name);
-        personViewHolder.date.setText(events.get(i).date);
+    public void onBindViewHolder(EventViewHolder eventViewHolder, int i) {
+        eventViewHolder.event.setText(events.get(i).name);
+        eventViewHolder.date.setText(events.get(i).date);
         final Event item = events.get(i);
-        final Context context = personViewHolder.itemView.getContext();
-        personViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+        final Context context = eventViewHolder.itemView.getContext();
+        eventViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, EventActivity.class);
