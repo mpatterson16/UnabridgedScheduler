@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference();
 
-        List<Event> events = new ArrayList<>();
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -51,14 +50,14 @@ public class MainActivity extends AppCompatActivity {
                 // whenever data at this location is updated.
                 Iterable<DataSnapshot> snapshotIterator = dataSnapshot.getChildren();
                 Iterator<DataSnapshot> iterator = snapshotIterator.iterator();
-                List<Event> newEvents = new ArrayList<>();
+                List<Event> events = new ArrayList<>();
                 while (iterator.hasNext()) {
                     DataSnapshot next = (DataSnapshot) iterator.next();
 
-                    newEvents.add(new Event(next.child("name").getValue().toString(), next.child("date").getValue().toString(), next.child("desc").getValue().toString()));
+                    events.add(new Event(next.child("name").getValue().toString(), next.child("date").getValue().toString(), next.child("desc").getValue().toString(), next.getKey()));
                 }
 
-                RVAdapter adapter = new RVAdapter(newEvents);
+                RVAdapter adapter = new RVAdapter(events);
                 recyclerView.setAdapter(adapter);
             }
 
@@ -68,10 +67,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("DB", "Failed to read value.", error.toException());
             }
         });
-
-
-//        RVAdapter adapter = new RVAdapter(events);
-//        recyclerView.setAdapter(adapter);
 
         Button addButton = (Button)findViewById(R.id.addButton);
 
