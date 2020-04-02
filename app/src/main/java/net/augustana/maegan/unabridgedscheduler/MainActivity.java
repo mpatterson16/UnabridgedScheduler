@@ -10,6 +10,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -20,7 +25,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,29 +36,42 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        RecyclerView recyclerView = (RecyclerView)findViewById(R.id.recyclerView);
+        final RecyclerView recyclerView = (RecyclerView)findViewById(R.id.recyclerView);
         LinearLayoutManager manager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(manager);
 
-        BufferedReader r = new BufferedReader(new InputStreamReader(getResources().openRawResource(R.raw.events)));
-        StringBuilder builder = new StringBuilder();
-        try {
-            String line = r.readLine();
-            while (line != null) {
-                builder.append(line);
-                line = r.readLine();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference();
+
+        List<Event> events = new ArrayList<>();
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                Iterable<DataSnapshot> snapshotIterator = dataSnapshot.getChildren();
+                Iterator<DataSnapshot> iterator = snapshotIterator.iterator();
+                List<Event> newEvents = new ArrayList<>();
+                while (iterator.hasNext()) {
+                    DataSnapshot next = (DataSnapshot) iterator.next();
+
+                    newEvents.add(new Event(next.child("name").getValue().toString(), next.child("date").getValue().toString(), next.child("desc").getValue().toString()));
+                }
+
+                RVAdapter adapter = new RVAdapter(newEvents);
+                recyclerView.setAdapter(adapter);
             }
-        } catch (IOException e) {
-            Log.e("IOException", "onCreate: failed to read json");
-        }
-        String json = builder.toString();
 
-        //https://futurestud.io/tutorials/gson-mapping-of-arrays-and-lists-of-objects
-        Type eventListType = new TypeToken<ArrayList<Event>>(){}.getType();
-        List<Event> events = new Gson().fromJson(json, eventListType);
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.e("DB", "Failed to read value.", error.toException());
+            }
+        });
 
-        RVAdapter adapter = new RVAdapter(events);
-        recyclerView.setAdapter(adapter);
+
+//        RVAdapter adapter = new RVAdapter(events);
+//        recyclerView.setAdapter(adapter);
 
         Button addButton = (Button)findViewById(R.id.addButton);
 
