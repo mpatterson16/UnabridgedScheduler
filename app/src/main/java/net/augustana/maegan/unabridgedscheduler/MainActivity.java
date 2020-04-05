@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
                     for(DataSnapshot item : data) {
                         Log.d("DB: ", "onDataChange: " + item.getKey() + " " + item.getChildren());
                         if(next.getKey().equals("events")) {
-                            events.add(new Event(item.child("name").getValue().toString(), item.child("date").getValue().toString(), item.child("desc").getValue().toString(), item.getKey()));
+                            events.add(new Event(item.child("name").getValue().toString(), item.child("date").getValue().toString(), item.child("desc").getValue().toString(), item.child("loc").getValue().toString(), item.getKey()));
                         } else if(next.getKey().equals("users")) {
                             users.add(item.child("uid").getValue().toString());
                         }
@@ -75,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("DB: ", "onDataChange: " + next.getKey());
                     Log.d("DB: ", "onDataChange: " + next.getChildren());
 
-                    //events.add(new Event(next.child("name").getValue().toString(), next.child("date").getValue().toString(), next.child("desc").getValue().toString(), next.getKey()));
                 }
 
                 FirebaseAuth auth = FirebaseAuth.getInstance();

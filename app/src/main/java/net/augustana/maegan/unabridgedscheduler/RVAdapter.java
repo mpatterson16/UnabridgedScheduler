@@ -47,6 +47,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.EventViewHolder>{
                 intent.putExtra("event", item.name);
                 intent.putExtra("date", item.date);
                 intent.putExtra("desc", item.desc);
+                intent.putExtra("loc", item.location);
                 intent.putExtra("id", item.id);
                 intent.putExtra("authorized", authorized);
                 context.startActivity(intent);

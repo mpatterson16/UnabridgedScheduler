@@ -26,11 +26,13 @@ public class EventActivity extends AppCompatActivity {
         final EditText eventText = (EditText)findViewById(R.id.eventText);
         final EditText dateText = (EditText)findViewById(R.id.dateText);
         final EditText descriptionText = (EditText)findViewById(R.id.descriptionText);
+        final EditText locationText = findViewById(R.id.locationText);
 
         Intent intent = this.getIntent();
         String event = intent.getStringExtra("event");
         String date = intent.getStringExtra("date");
         String desc = intent.getStringExtra("desc");
+        String loc = intent.getStringExtra("loc");
         final String id = intent.getStringExtra("id");
         boolean authorized = intent.getBooleanExtra("authorized", false);
         Log.d("ID:", "onCreate: id: " + id);
@@ -38,6 +40,7 @@ public class EventActivity extends AppCompatActivity {
         eventText.setText(event, TextView.BufferType.NORMAL);
         dateText.setText(date, TextView.BufferType.NORMAL);
         descriptionText.setText(desc, TextView.BufferType.NORMAL);
+        locationText.setText(loc, TextView.BufferType.NORMAL);
 
         Button saveButton = (Button)findViewById(R.id.saveButton);
         Button deleteButton = (Button)findViewById(R.id.deleteButton);
@@ -46,12 +49,14 @@ public class EventActivity extends AppCompatActivity {
             eventText.setEnabled(true);
             dateText.setEnabled(true);
             descriptionText.setEnabled(true);
+            locationText.setEnabled(true);
             saveButton.setEnabled(true);
             deleteButton.setEnabled(true);
         } else {
             eventText.setEnabled(false);
             dateText.setEnabled(false);
             descriptionText.setEnabled(false);
+            locationText.setEnabled(false);
             saveButton.setEnabled(false);
             deleteButton.setEnabled(false);
         }
@@ -68,6 +73,7 @@ public class EventActivity extends AppCompatActivity {
                 eventRef.child("name").setValue(eventText.getText().toString());
                 eventRef.child("date").setValue(dateText.getText().toString());
                 eventRef.child("desc").setValue(descriptionText.getText().toString());
+                eventRef.child("loc").setValue(locationText.getText().toString());
 
                 Intent intent = new Intent(getBaseContext(), MainActivity.class);
                 startActivity(intent);
