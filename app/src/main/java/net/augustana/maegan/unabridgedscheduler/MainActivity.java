@@ -13,6 +13,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -46,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference();
 
+        final Button addButton = (Button)findViewById(R.id.addButton);
+
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -54,14 +59,38 @@ public class MainActivity extends AppCompatActivity {
                 Iterable<DataSnapshot> snapshotIterator = dataSnapshot.getChildren();
                 Iterator<DataSnapshot> iterator = snapshotIterator.iterator();
                 List<Event> events = new ArrayList<>();
+                List<String> users = new ArrayList<>();
                 while (iterator.hasNext()) {
                     DataSnapshot next = (DataSnapshot) iterator.next();
+                    Iterable<DataSnapshot> data = next.getChildren();
+                    for(DataSnapshot item : data) {
+                        Log.d("DB: ", "onDataChange: " + item.getKey() + " " + item.getChildren());
+                        if(next.getKey().equals("events")) {
+                            events.add(new Event(item.child("name").getValue().toString(), item.child("date").getValue().toString(), item.child("desc").getValue().toString(), item.getKey()));
+                        } else if(next.getKey().equals("users")) {
+                            users.add(item.child("uid").getValue().toString());
+                        }
+                    }
+                    Log.d("DB: ", "onDataChange: " + next.getKey());
+                    Log.d("DB: ", "onDataChange: " + next.getChildren());
 
-                    events.add(new Event(next.child("name").getValue().toString(), next.child("date").getValue().toString(), next.child("desc").getValue().toString(), next.getKey()));
+                    //events.add(new Event(next.child("name").getValue().toString(), next.child("date").getValue().toString(), next.child("desc").getValue().toString(), next.getKey()));
                 }
 
                 RVAdapter adapter = new RVAdapter(events);
                 recyclerView.setAdapter(adapter);
+
+                GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.default_web_client_id))
+                    .requestEmail()
+                    .build();
+                FirebaseAuth auth = FirebaseAuth.getInstance();
+                FirebaseUser account = auth.getCurrentUser();
+                if(account == null || !users.contains(account.getUid())) {
+                    addButton.setEnabled(false);
+                } else {
+                    addButton.setEnabled(true);
+                }
             }
 
             @Override
@@ -71,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button addButton = (Button)findViewById(R.id.addButton);
+
 
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override

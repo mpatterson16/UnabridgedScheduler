@@ -55,7 +55,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         final GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        FirebaseUser account = auth.getCurrentUser();
         if(account != null) {
             authView.setText("Signed in as " + account.getDisplayName());
         } else {
