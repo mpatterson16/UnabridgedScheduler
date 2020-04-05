@@ -15,9 +15,11 @@ import androidx.recyclerview.widget.RecyclerView;
 public class RVAdapter extends RecyclerView.Adapter<RVAdapter.EventViewHolder>{
 
     List<Event> events;
+    boolean authorized;
 
-    RVAdapter(List<Event> events){
+    RVAdapter(List<Event> events, boolean authorized){
         this.events = events;
+        this.authorized = authorized;
     }
 
     @Override
@@ -46,6 +48,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.EventViewHolder>{
                 intent.putExtra("date", item.date);
                 intent.putExtra("desc", item.desc);
                 intent.putExtra("id", item.id);
+                intent.putExtra("authorized", authorized);
                 context.startActivity(intent);
             }
         });

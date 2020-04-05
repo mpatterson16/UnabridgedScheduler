@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
 
         final Button addButton = (Button)findViewById(R.id.addButton);
 
+        final List<String> users = new ArrayList<>();
+
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -59,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
                 Iterable<DataSnapshot> snapshotIterator = dataSnapshot.getChildren();
                 Iterator<DataSnapshot> iterator = snapshotIterator.iterator();
                 List<Event> events = new ArrayList<>();
-                List<String> users = new ArrayList<>();
                 while (iterator.hasNext()) {
                     DataSnapshot next = (DataSnapshot) iterator.next();
                     Iterable<DataSnapshot> data = next.getChildren();
@@ -77,19 +78,18 @@ public class MainActivity extends AppCompatActivity {
                     //events.add(new Event(next.child("name").getValue().toString(), next.child("date").getValue().toString(), next.child("desc").getValue().toString(), next.getKey()));
                 }
 
-                RVAdapter adapter = new RVAdapter(events);
-                recyclerView.setAdapter(adapter);
-
-                GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestIdToken(getString(R.string.default_web_client_id))
-                    .requestEmail()
-                    .build();
                 FirebaseAuth auth = FirebaseAuth.getInstance();
                 FirebaseUser account = auth.getCurrentUser();
-                if(account == null || !users.contains(account.getUid())) {
-                    addButton.setEnabled(false);
-                } else {
+
+                boolean authorized = account != null && users.contains(account.getUid());
+
+                RVAdapter adapter = new RVAdapter(events, authorized);
+                recyclerView.setAdapter(adapter);
+
+                if(authorized) {
                     addButton.setEnabled(true);
+                } else {
+                    addButton.setEnabled(false);
                 }
             }
 
@@ -106,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getBaseContext(), EventActivity.class);
+                intent.putExtra("users", users.toArray());
                 startActivity(intent);
             }
         });

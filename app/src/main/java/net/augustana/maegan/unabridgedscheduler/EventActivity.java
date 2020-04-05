@@ -32,6 +32,7 @@ public class EventActivity extends AppCompatActivity {
         String date = intent.getStringExtra("date");
         String desc = intent.getStringExtra("desc");
         final String id = intent.getStringExtra("id");
+        boolean authorized = intent.getBooleanExtra("authorized", false);
         Log.d("ID:", "onCreate: id: " + id);
 
         eventText.setText(event, TextView.BufferType.NORMAL);
@@ -40,6 +41,20 @@ public class EventActivity extends AppCompatActivity {
 
         Button saveButton = (Button)findViewById(R.id.saveButton);
         Button deleteButton = (Button)findViewById(R.id.deleteButton);
+
+        if(authorized) {
+            eventText.setEnabled(true);
+            dateText.setEnabled(true);
+            descriptionText.setEnabled(true);
+            saveButton.setEnabled(true);
+            deleteButton.setEnabled(true);
+        } else {
+            eventText.setEnabled(false);
+            dateText.setEnabled(false);
+            descriptionText.setEnabled(false);
+            saveButton.setEnabled(false);
+            deleteButton.setEnabled(false);
+        }
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
