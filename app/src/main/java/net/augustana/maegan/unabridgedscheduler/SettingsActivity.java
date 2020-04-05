@@ -11,12 +11,16 @@ import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -74,6 +78,7 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 FirebaseAuth.getInstance().signOut();
+                googleSignInClient.signOut();
                 authView.setText("Not signed in");
             }
         });
@@ -92,7 +97,6 @@ public class SettingsActivity extends AppCompatActivity {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             firebaseAuthWithGoogle(account);
-            authView.setText("Signed in as " + account.getDisplayName());
         } catch (ApiException e) {
             Log.w("Error: ", "signInResult:failed code=" + e.getStatusCode());
             authView.setText("Not signed in");
@@ -116,8 +120,6 @@ public class SettingsActivity extends AppCompatActivity {
                             Log.w("Auth: ", "signInWithCredential:failure", task.getException());
                             authView.setText("Not signed in");
                         }
-
-                        // ...
                     }
                 });
     }
