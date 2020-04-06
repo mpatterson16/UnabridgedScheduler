@@ -69,7 +69,14 @@ public class MainActivity extends AppCompatActivity {
                     for(DataSnapshot item : data) {
                         Log.d("DB: ", "onDataChange: " + item.getKey() + " " + item.getChildren());
                         if(next.getKey().equals("events")) {
-                            events.add(new Event(item.child("name").getValue().toString(), item.child("date").getValue().toString(), item.child("desc").getValue().toString(), item.child("loc").getValue().toString(), item.getKey()));
+                            try {
+                                events.add(new Event(item.child("name").getValue().toString(), item.child("date").getValue().toString(), item.child("desc").getValue().toString(), item.child("loc").getValue().toString(), item.getKey()));
+                            } catch (NullPointerException e) {
+                                Log.d("NullPointerException: ", "onDataChange: " + item.child("name").getValue());
+                                Log.d("NullPointerException: ", "onDataChange: " + item.child("date").getValue());
+                                Log.d("NullPointerException: ", "onDataChange: " + item.child("desc").getValue());
+                                Log.d("NullPointerException: ", "onDataChange: " + item.child("loc").getValue());
+                            }
                         } else if(next.getKey().equals("users")) {
                             users.add(item.child("uid").getValue().toString());
                         }

@@ -36,6 +36,7 @@ public class SettingsActivity extends AppCompatActivity {
     DatabaseReference ref;
     private FirebaseAuth auth;
     Button signoutButton;
+    SignInButton signInButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +46,7 @@ public class SettingsActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         ref = database.getReference().child("users");
 
-        SignInButton signInButton = findViewById(R.id.sign_in_button);
+        signInButton = findViewById(R.id.sign_in_button);
         Switch notifSwitch = findViewById(R.id.notifSwitch);
         authView = findViewById(R.id.authTextView);
         signoutButton = findViewById(R.id.signoutButton);
@@ -62,8 +63,12 @@ public class SettingsActivity extends AppCompatActivity {
         FirebaseUser account = auth.getCurrentUser();
         if(account != null) {
             authView.setText("Signed in as " + account.getDisplayName());
+            signInButton.setEnabled(false);
+            signoutButton.setEnabled(true);
         } else {
             authView.setText("Not signed in");
+            signInButton.setEnabled(true);
+            signoutButton.setEnabled(false);
         }
 
         signInButton.setOnClickListener(new View.OnClickListener() {
@@ -80,6 +85,8 @@ public class SettingsActivity extends AppCompatActivity {
                 FirebaseAuth.getInstance().signOut();
                 googleSignInClient.signOut();
                 authView.setText("Not signed in");
+                signInButton.setEnabled(true);
+                signoutButton.setEnabled(false);
             }
         });
     }
@@ -116,9 +123,13 @@ public class SettingsActivity extends AppCompatActivity {
                             FirebaseUser user = auth.getCurrentUser();
                             Log.d("UID: ", "onComplete: " + user.getUid());
                             authView.setText("Signed in as " + user.getDisplayName());
+                            signInButton.setEnabled(false);
+                            signoutButton.setEnabled(true);
                         } else {
                             Log.w("Auth: ", "signInWithCredential:failure", task.getException());
                             authView.setText("Not signed in");
+                            signInButton.setEnabled(true);
+                            signoutButton.setEnabled(false);
                         }
                     }
                 });
