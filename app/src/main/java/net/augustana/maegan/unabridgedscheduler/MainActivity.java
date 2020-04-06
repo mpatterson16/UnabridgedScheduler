@@ -35,6 +35,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+//icon from http://clipart-library.com/clipart/hot-chocolate-clipart-2-27.htm
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
