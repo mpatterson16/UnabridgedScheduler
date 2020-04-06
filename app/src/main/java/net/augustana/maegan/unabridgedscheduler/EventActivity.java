@@ -54,12 +54,23 @@ public class EventActivity extends AppCompatActivity {
         Button deleteButton = (Button)findViewById(R.id.deleteButton);
 
         final Calendar calendar = Calendar.getInstance();
+        final int month;
+        final int day;
+        final int hour;
+        final int minute;
 
         String fullDate = dateText.getText().toString();
-        final int month = Integer.parseInt(fullDate.substring(0, 2));
-        final int day = Integer.parseInt(fullDate.substring(3, 5));
-        final int hour = Integer.parseInt(fullDate.substring(6, 8));
-        final int minute = Integer.parseInt(fullDate.substring(9));
+        if(!fullDate.equals("")) {
+            month = Integer.parseInt(fullDate.substring(0, 2));
+            day = Integer.parseInt(fullDate.substring(3, 5));
+            hour = Integer.parseInt(fullDate.substring(6, 8));
+            minute = Integer.parseInt(fullDate.substring(9));
+        } else {
+            month = calendar.get(Calendar.MONTH);
+            day = calendar.get(Calendar.DAY_OF_MONTH);
+            hour = calendar.get(Calendar.HOUR);
+            minute = calendar.get(Calendar.MINUTE);
+        }
 
         if(authorized) {
             eventText.setEnabled(true);
@@ -132,7 +143,7 @@ public class EventActivity extends AppCompatActivity {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ref.child(id).removeValue();
+                ref.child("events").child(id).removeValue();
 
                 Intent intent = new Intent(getBaseContext(), MainActivity.class);
                 startActivity(intent);
