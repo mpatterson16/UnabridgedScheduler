@@ -55,6 +55,12 @@ public class EventActivity extends AppCompatActivity {
 
         final Calendar calendar = Calendar.getInstance();
 
+        String fullDate = dateText.getText().toString();
+        final int month = Integer.parseInt(fullDate.substring(0, 2));
+        final int day = Integer.parseInt(fullDate.substring(3, 5));
+        final int hour = Integer.parseInt(fullDate.substring(6, 8));
+        final int minute = Integer.parseInt(fullDate.substring(9));
+
         if(authorized) {
             eventText.setEnabled(true);
             dateText.setEnabled(true);
@@ -92,7 +98,7 @@ public class EventActivity extends AppCompatActivity {
                 calendar.set(Calendar.YEAR, year);
                 calendar.set(Calendar.MONTH, month);
                 calendar.set(Calendar.DAY_OF_MONTH, day);
-                new TimePickerDialog(EventActivity.this, timeSetListener, calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), true).show();
+                new TimePickerDialog(EventActivity.this, timeSetListener, hour, minute, false).show();
             }
 
         };
@@ -100,7 +106,7 @@ public class EventActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                new DatePickerDialog(EventActivity.this, dateSetListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+                new DatePickerDialog(EventActivity.this, dateSetListener, calendar.get(Calendar.YEAR), month, day).show();
             }
         });
 
@@ -109,9 +115,9 @@ public class EventActivity extends AppCompatActivity {
             public void onClick(View view) {
                 DatabaseReference eventRef;
                 if(id == null) {
-                    eventRef = ref.push();
+                    eventRef = ref.child("events").push();
                 } else {
-                    eventRef = ref.child(id);
+                    eventRef = ref.child("events").child(id);
                 }
                 eventRef.child("name").setValue(eventText.getText().toString());
                 eventRef.child("date").setValue(dateText.getText().toString());
