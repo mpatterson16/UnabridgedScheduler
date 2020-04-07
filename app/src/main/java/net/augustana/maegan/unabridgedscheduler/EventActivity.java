@@ -131,7 +131,7 @@ public class EventActivity extends AppCompatActivity {
                 calendarUnits[2] += 12;
             }
         } else {
-            calendarUnits[0] = calendar.get(Calendar.MONTH);
+            calendarUnits[0] = calendar.get(Calendar.MONTH) + 1;
             calendarUnits[1] = calendar.get(Calendar.DAY_OF_MONTH);
             calendarUnits[2] = calendar.get(Calendar.HOUR_OF_DAY);
             calendarUnits[3] = calendar.get(Calendar.MINUTE);
