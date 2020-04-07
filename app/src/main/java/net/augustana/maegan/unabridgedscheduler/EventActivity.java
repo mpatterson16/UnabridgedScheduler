@@ -83,15 +83,15 @@ public class EventActivity extends AppCompatActivity {
             dateText.setEnabled(true);
             descriptionText.setEnabled(true);
             locationText.setEnabled(true);
-            saveButton.setEnabled(true);
-            deleteButton.setEnabled(true);
+            saveButton.setVisibility(View.VISIBLE);
+            deleteButton.setVisibility(View.VISIBLE);
         } else {
             eventText.setEnabled(false);
             dateText.setEnabled(false);
             descriptionText.setEnabled(false);
             locationText.setEnabled(false);
-            saveButton.setEnabled(false);
-            deleteButton.setEnabled(false);
+            saveButton.setVisibility(View.GONE);
+            deleteButton.setVisibility(View.GONE);
         }
 
 

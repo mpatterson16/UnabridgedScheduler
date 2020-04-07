@@ -101,9 +101,9 @@ public class MainActivity extends AppCompatActivity {
                 recyclerView.setAdapter(adapter);
 
                 if(authorized) {
-                    addButton.setEnabled(true);
+                    addButton.setVisibility(View.VISIBLE);
                 } else {
-                    addButton.setEnabled(false);
+                    addButton.setVisibility(View.GONE);
                 }
             }
 
