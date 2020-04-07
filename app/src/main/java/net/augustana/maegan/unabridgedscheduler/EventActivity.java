@@ -80,6 +80,7 @@ public class EventActivity extends AppCompatActivity {
             deleteButton.setVisibility(View.GONE);
         }
 
+        dateText.setShowSoftInputOnFocus(false);
         setupCalendar();
 
         final TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener() {
@@ -109,7 +110,7 @@ public class EventActivity extends AppCompatActivity {
         dateText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new DatePickerDialog(EventActivity.this, dateSetListener, calendar.get(Calendar.YEAR), calendarUnits[0], calendarUnits[1]).show();
+                new DatePickerDialog(EventActivity.this, dateSetListener, calendar.get(Calendar.YEAR), calendarUnits[0] - 1, calendarUnits[1]).show();
             }
         });
     }
