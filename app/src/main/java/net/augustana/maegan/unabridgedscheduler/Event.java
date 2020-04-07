@@ -1,6 +1,6 @@
 package net.augustana.maegan.unabridgedscheduler;
 
-public class Event {
+public class Event implements Comparable<Event> {
     String name;
     String date;
     String desc;
@@ -13,5 +13,9 @@ public class Event {
         this.desc = desc;
         this.location = loc;
         this.id = id;
+    }
+
+    public int compareTo(Event other) {
+        return date.compareTo(other.date);
     }
 }
