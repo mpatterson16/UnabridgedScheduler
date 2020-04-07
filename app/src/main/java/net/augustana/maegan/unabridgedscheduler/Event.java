@@ -1,11 +1,11 @@
 package net.augustana.maegan.unabridgedscheduler;
 
 public class Event implements Comparable<Event> {
-    String name;
-    String date;
-    String desc;
-    String location;
-    String id;
+    private String name;
+    private String date;
+    private String desc;
+    private String location;
+    private String id;
 
     public Event(String name, String date, String desc, String loc, String id) {
         this.name = name;
@@ -15,7 +15,29 @@ public class Event implements Comparable<Event> {
         this.id = id;
     }
 
+    //sort by earliest date
     public int compareTo(Event other) {
         return date.compareTo(other.date);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    //the randomly generated ID used to identify the event in the database
+    public String getId() {
+        return id;
     }
 }

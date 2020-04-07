@@ -23,6 +23,18 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.Locale;
 
 public class EventActivity extends AppCompatActivity {
+    DatabaseReference ref;
+    EditText eventText;
+    EditText dateText;
+    EditText descriptionText;
+    EditText locationText;
+    Button saveButton;
+    Button deleteButton;
+
+    Calendar calendar;
+    int[] calendarUnits;
+
+    String id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,70 +42,45 @@ public class EventActivity extends AppCompatActivity {
         setContentView(R.layout.activity_event);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference ref = database.getReference();
+        ref = database.getReference();
 
-        final EditText eventText = (EditText)findViewById(R.id.eventText);
-        final EditText dateText = (EditText)findViewById(R.id.dateText);
-        final EditText descriptionText = (EditText)findViewById(R.id.descriptionText);
-        final EditText locationText = findViewById(R.id.locationText);
+        eventText = (EditText)findViewById(R.id.eventText);
+        dateText = (EditText)findViewById(R.id.dateText);
+        descriptionText = (EditText)findViewById(R.id.descriptionText);
+        locationText = findViewById(R.id.locationText);
+        saveButton = findViewById(R.id.saveButton);
+        deleteButton = findViewById(R.id.deleteButton);
 
+        //get all the data passed into this activity by the RVAdaptor
         Intent intent = this.getIntent();
-        final String event = intent.getStringExtra("event");
+        String event = intent.getStringExtra("event");
         String date = intent.getStringExtra("date");
         String desc = intent.getStringExtra("desc");
         String loc = intent.getStringExtra("loc");
-        final String id = intent.getStringExtra("id");
+        id = intent.getStringExtra("id");
         boolean authorized = intent.getBooleanExtra("authorized", false);
-        Log.d("ID:", "onCreate: id: " + id);
 
         eventText.setText(event, TextView.BufferType.NORMAL);
         dateText.setText(date, TextView.BufferType.NORMAL);
         descriptionText.setText(desc, TextView.BufferType.NORMAL);
         locationText.setText(loc, TextView.BufferType.NORMAL);
 
-        Button saveButton = (Button)findViewById(R.id.saveButton);
-        Button deleteButton = (Button)findViewById(R.id.deleteButton);
+        //fields are only editable if authorized
+        eventText.setEnabled(authorized);
+        dateText.setEnabled(authorized);
+        descriptionText.setEnabled(authorized);
+        locationText.setEnabled(authorized);
 
-        final Calendar calendar = Calendar.getInstance();
-        final int month;
-        final int day;
-        final int hour;
-        int tempHour;
-        final int minute;
-
-        String fullDate = dateText.getText().toString();
-        if(!fullDate.equals("")) {
-            month = Integer.parseInt(fullDate.substring(0, 2));
-            day = Integer.parseInt(fullDate.substring(3, 5));
-            tempHour = Integer.parseInt(fullDate.substring(6, 8));
-            minute = Integer.parseInt(fullDate.substring(9, 11));
-            if(fullDate.substring(12).equals("PM")) {
-                tempHour += 12;
-            }
-        } else {
-            month = calendar.get(Calendar.MONTH);
-            day = calendar.get(Calendar.DAY_OF_MONTH);
-            tempHour = calendar.get(Calendar.HOUR_OF_DAY);
-            minute = calendar.get(Calendar.MINUTE);
-        }
-
-        hour = tempHour;
+        //buttons disappear if user can't write to database
         if(authorized) {
-            eventText.setEnabled(true);
-            dateText.setEnabled(true);
-            descriptionText.setEnabled(true);
-            locationText.setEnabled(true);
             saveButton.setVisibility(View.VISIBLE);
             deleteButton.setVisibility(View.VISIBLE);
         } else {
-            eventText.setEnabled(false);
-            dateText.setEnabled(false);
-            descriptionText.setEnabled(false);
-            locationText.setEnabled(false);
             saveButton.setVisibility(View.GONE);
             deleteButton.setVisibility(View.GONE);
         }
 
+        setupCalendar();
 
         final TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener() {
             @Override
@@ -108,59 +95,90 @@ public class EventActivity extends AppCompatActivity {
         };
 
         final DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
-
             @Override
             public void onDateSet(DatePicker view, int year, int month, int day) {
                 calendar.set(Calendar.YEAR, year);
                 calendar.set(Calendar.MONTH, month);
                 calendar.set(Calendar.DAY_OF_MONTH, day);
-                new TimePickerDialog(EventActivity.this, timeSetListener, hour, minute, false).show();
+                new TimePickerDialog(EventActivity.this, timeSetListener, calendarUnits[2], calendarUnits[3], false).show();
             }
 
         };
-        dateText.setOnClickListener(new View.OnClickListener() {
 
+        //when the user clicks the date field, open a calendar and clock to pick date and time
+        dateText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new DatePickerDialog(EventActivity.this, dateSetListener, calendar.get(Calendar.YEAR), month, day).show();
+                new DatePickerDialog(EventActivity.this, dateSetListener, calendar.get(Calendar.YEAR), calendarUnits[0], calendarUnits[1]).show();
             }
         });
+    }
 
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(eventText.getText().toString().equals("") || dateText.getText().toString().equals("")) {
-                    Toast.makeText(getApplicationContext(), "Event must have name and date", Toast.LENGTH_LONG).show();
-                } else {
-                    DatabaseReference eventRef;
-                    if (id == null) {
-                        eventRef = ref.child("events").push();
-                    } else {
-                        eventRef = ref.child("events").child(id);
-                    }
-                    eventRef.child("name").setValue(eventText.getText().toString());
-                    eventRef.child("date").setValue(dateText.getText().toString());
-                    eventRef.child("desc").setValue(descriptionText.getText().toString());
-                    eventRef.child("loc").setValue(locationText.getText().toString());
+    /**
+     * Set up the month, day, hour, and minute of the calendar for the date picker
+     */
+    public void setupCalendar() {
+        calendar = Calendar.getInstance();
+        calendarUnits = new int[4];
+        String fullDate = dateText.getText().toString();
 
-                    Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                    startActivity(intent);
-                }
+        if(!fullDate.equals("")) {
+            for(int i = 0; i < 4; i++) {
+                calendarUnits[i] = Integer.parseInt(fullDate.substring(i * 3, i * 3 + 2));
             }
-        });
-
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    ref.child("events").child(id).removeValue();
-
-                    Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                    startActivity(intent);
-                } catch(NullPointerException e) {
-                    Toast.makeText(getApplicationContext(), "Cannot delete unsaved event", Toast.LENGTH_LONG).show();
-                }
+            if(fullDate.substring(12).equals("PM")) {
+                calendarUnits[2] += 12;
             }
-        });
+        } else {
+            calendarUnits[0] = calendar.get(Calendar.MONTH);
+            calendarUnits[1] = calendar.get(Calendar.DAY_OF_MONTH);
+            calendarUnits[2] = calendar.get(Calendar.HOUR_OF_DAY);
+            calendarUnits[3] = calendar.get(Calendar.MINUTE);
+        }
+    }
+
+    /**
+     * When the user presses the save button, save the different fields to the database. If the user
+     * didn't include a name or date, don't save it and just display a warning.
+     *
+     * @param view
+     */
+    public void save(View view) {
+        if(eventText.getText().toString().equals("") || dateText.getText().toString().equals("")) {
+            Toast.makeText(getApplicationContext(), "Event must have name and date", Toast.LENGTH_LONG).show();
+        } else {
+            DatabaseReference eventRef;
+
+            //if the event is brand new, create a new ID for it
+            if (id == null) {
+                eventRef = ref.child("events").push();
+            } else {
+                eventRef = ref.child("events").child(id);
+            }
+
+            eventRef.child("name").setValue(eventText.getText().toString());
+            eventRef.child("date").setValue(dateText.getText().toString());
+            eventRef.child("desc").setValue(descriptionText.getText().toString());
+            eventRef.child("loc").setValue(locationText.getText().toString());
+
+            Intent intent = new Intent(getBaseContext(), MainActivity.class);
+            startActivity(intent);
+        }
+    }
+
+    /**
+     * Delete the event from the database unless it is a new event that does not exist in the database
+     *
+     * @param view
+     */
+    public void delete(View view) {
+        try {
+            ref.child("events").child(id).removeValue();
+
+            Intent intent = new Intent(getBaseContext(), MainActivity.class);
+            startActivity(intent);
+        } catch(NullPointerException e) {
+            Toast.makeText(getApplicationContext(), "Cannot delete unsaved event", Toast.LENGTH_LONG).show();
+        }
     }
 }

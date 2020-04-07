@@ -8,12 +8,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -21,60 +19,60 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-//icon from http://clipart-library.com/clipart/hot-chocolate-clipart-2-27.htm
 
 public class MainActivity extends AppCompatActivity {
+    RecyclerView recyclerView;
+    Button addButton;
+
+    ArrayList<String> users;
+    ArrayList<Event> events;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final RecyclerView recyclerView = (RecyclerView)findViewById(R.id.recyclerView);
+        events = new ArrayList<>();
+        users = new ArrayList<>();
+
+        //Recycler view of Events
+        recyclerView = findViewById(R.id.recyclerView);
         LinearLayoutManager manager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(manager);
 
+        addButton = findViewById(R.id.addButton);
+
+        //set up database reference
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference();
 
-        final Button addButton = (Button)findViewById(R.id.addButton);
-
-        final List<String> users = new ArrayList<>();
-
+        //Set up and read from the database as it changes
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
                 Iterable<DataSnapshot> snapshotIterator = dataSnapshot.getChildren();
                 Iterator<DataSnapshot> iterator = snapshotIterator.iterator();
-                List<Event> events = new ArrayList<>();
+                events = new ArrayList<>();
+                users = new ArrayList<>();
+
+                //there are two things in this iterator: the events and the users
                 while (iterator.hasNext()) {
-                    DataSnapshot next = (DataSnapshot) iterator.next();
+                    DataSnapshot next = iterator.next();
                     Iterable<DataSnapshot> data = next.getChildren();
+
+                    //get all the children of both events and users, and then put them in their respective lists
                     for(DataSnapshot item : data) {
                         Log.d("DB: ", "onDataChange: " + item.getKey() + " " + item.getChildren());
                         if(next.getKey().equals("events")) {
                             try {
-                                events.add(new Event(item.child("name").getValue().toString(), item.child("date").getValue().toString(), item.child("desc").getValue().toString(), item.child("loc").getValue().toString(), item.getKey()));
+                                events.add(new Event(item.child("name").getValue().toString(),
+                                        item.child("date").getValue().toString(),
+                                        item.child("desc").getValue().toString(),
+                                        item.child("loc").getValue().toString(), item.getKey()));
                             } catch (NullPointerException e) {
                                 Log.d("NullPointerException: ", "onDataChange: " + item.child("name").getValue());
                                 Log.d("NullPointerException: ", "onDataChange: " + item.child("date").getValue());
@@ -85,21 +83,16 @@ public class MainActivity extends AppCompatActivity {
                             users.add(item.child("uid").getValue().toString());
                         }
                     }
-                    Log.d("DB: ", "onDataChange: " + next.getKey());
-                    Log.d("DB: ", "onDataChange: " + next.getChildren());
-
                 }
 
+                boolean authorized = checkUserAuthorization();
+
+                //sort by date
                 Collections.sort(events);
-
-                FirebaseAuth auth = FirebaseAuth.getInstance();
-                FirebaseUser account = auth.getCurrentUser();
-
-                boolean authorized = account != null && users.contains(account.getUid());
-
                 RVAdapter adapter = new RVAdapter(events, authorized);
                 recyclerView.setAdapter(adapter);
 
+                //make add button invisible if user can't edit database
                 if(authorized) {
                     addButton.setVisibility(View.VISIBLE);
                 } else {
@@ -109,13 +102,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError error) {
-                // Failed to read value
                 Log.e("DB", "Failed to read value.", error.toException());
             }
         });
 
 
-
+        //if the user can see the add button, then they are authorized to edit
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -124,9 +116,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-
-
     }
 
     @Override
@@ -142,4 +131,15 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Check if the user is signed in and if they are authorized to make changes to the database
+     *
+     * @return if they have permission to write to the database
+     */
+    public boolean checkUserAuthorization() {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser account = auth.getCurrentUser();
+
+        return account != null && users.contains(account.getUid());
+    }
 }

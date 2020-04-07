@@ -36,19 +36,19 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.EventViewHolder>{
 
     @Override
     public void onBindViewHolder(EventViewHolder eventViewHolder, int i) {
-        eventViewHolder.event.setText(events.get(i).name);
-        eventViewHolder.date.setText(events.get(i).date);
+        eventViewHolder.event.setText(events.get(i).getName());
+        eventViewHolder.date.setText(events.get(i).getDate());
         final Event item = events.get(i);
         final Context context = eventViewHolder.itemView.getContext();
         eventViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, EventActivity.class);
-                intent.putExtra("event", item.name);
-                intent.putExtra("date", item.date);
-                intent.putExtra("desc", item.desc);
-                intent.putExtra("loc", item.location);
-                intent.putExtra("id", item.id);
+                intent.putExtra("event", item.getName());
+                intent.putExtra("date", item.getDate());
+                intent.putExtra("desc", item.getDesc());
+                intent.putExtra("loc", item.getLocation());
+                intent.putExtra("id", item.getId());
                 intent.putExtra("authorized", authorized);
                 context.startActivity(intent);
             }
