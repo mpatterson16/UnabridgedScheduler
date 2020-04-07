@@ -15,6 +15,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -37,7 +38,7 @@ public class EventActivity extends AppCompatActivity {
         final EditText locationText = findViewById(R.id.locationText);
 
         Intent intent = this.getIntent();
-        String event = intent.getStringExtra("event");
+        final String event = intent.getStringExtra("event");
         String date = intent.getStringExtra("date");
         String desc = intent.getStringExtra("desc");
         String loc = intent.getStringExtra("loc");
@@ -124,29 +125,37 @@ public class EventActivity extends AppCompatActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DatabaseReference eventRef;
-                if(id == null) {
-                    eventRef = ref.child("events").push();
+                if(eventText.getText().toString().equals("") || dateText.getText().toString().equals("")) {
+                    Toast.makeText(getApplicationContext(), "Event must have name and date", Toast.LENGTH_LONG).show();
                 } else {
-                    eventRef = ref.child("events").child(id);
-                }
-                eventRef.child("name").setValue(eventText.getText().toString());
-                eventRef.child("date").setValue(dateText.getText().toString());
-                eventRef.child("desc").setValue(descriptionText.getText().toString());
-                eventRef.child("loc").setValue(locationText.getText().toString());
+                    DatabaseReference eventRef;
+                    if (id == null) {
+                        eventRef = ref.child("events").push();
+                    } else {
+                        eventRef = ref.child("events").child(id);
+                    }
+                    eventRef.child("name").setValue(eventText.getText().toString());
+                    eventRef.child("date").setValue(dateText.getText().toString());
+                    eventRef.child("desc").setValue(descriptionText.getText().toString());
+                    eventRef.child("loc").setValue(locationText.getText().toString());
 
-                Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                startActivity(intent);
+                    Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                    startActivity(intent);
+                }
             }
         });
 
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ref.child("events").child(id).removeValue();
+                try {
+                    ref.child("events").child(id).removeValue();
 
-                Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                startActivity(intent);
+                    Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                    startActivity(intent);
+                } catch(NullPointerException e) {
+                    Toast.makeText(getApplicationContext(), "Cannot delete unsaved event", Toast.LENGTH_LONG).show();
+                }
             }
         });
     }

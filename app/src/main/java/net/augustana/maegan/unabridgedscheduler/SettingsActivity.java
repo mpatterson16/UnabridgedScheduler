@@ -47,7 +47,6 @@ public class SettingsActivity extends AppCompatActivity {
         ref = database.getReference().child("users");
 
         signInButton = findViewById(R.id.sign_in_button);
-        Switch notifSwitch = findViewById(R.id.notifSwitch);
         authView = findViewById(R.id.authTextView);
         signoutButton = findViewById(R.id.signoutButton);
 

@@ -21,13 +21,13 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
-        android:layout_width="363dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:layout_marginLeft="15dp"
-        android:layout_marginTop="200dp"
-        android:layout_marginBottom="100dp"
+        android:layout_marginTop="180dp"
         android:layout_marginRight="15dp"
+        android:layout_marginBottom="100dp"
         app:layout_constraintBottom_toTopOf="@+id/addButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,7 +36,7 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="407dp"
+        android:layout_width="match_parent"
         android:layout_height="142dp"
         android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
