@@ -58,21 +58,26 @@ public class EventActivity extends AppCompatActivity {
         final int month;
         final int day;
         final int hour;
+        int tempHour;
         final int minute;
 
         String fullDate = dateText.getText().toString();
         if(!fullDate.equals("")) {
             month = Integer.parseInt(fullDate.substring(0, 2));
             day = Integer.parseInt(fullDate.substring(3, 5));
-            hour = Integer.parseInt(fullDate.substring(6, 8));
-            minute = Integer.parseInt(fullDate.substring(9));
+            tempHour = Integer.parseInt(fullDate.substring(6, 8));
+            minute = Integer.parseInt(fullDate.substring(9, 11));
+            if(fullDate.substring(12).equals("PM")) {
+                tempHour += 12;
+            }
         } else {
             month = calendar.get(Calendar.MONTH);
             day = calendar.get(Calendar.DAY_OF_MONTH);
-            hour = calendar.get(Calendar.HOUR);
+            tempHour = calendar.get(Calendar.HOUR_OF_DAY);
             minute = calendar.get(Calendar.MINUTE);
         }
 
+        hour = tempHour;
         if(authorized) {
             eventText.setEnabled(true);
             dateText.setEnabled(true);
@@ -90,14 +95,13 @@ public class EventActivity extends AppCompatActivity {
         }
 
 
-
         final TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-                calendar.set(Calendar.HOUR, hour);
+                calendar.set(Calendar.HOUR_OF_DAY, hour);
                 calendar.set(Calendar.MINUTE, minute);
-                String myFormat = "MM/dd hh:mm";
-                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+                String format = "MM/dd hh:mm a";
+                SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.US);
 
                 dateText.setText(sdf.format(calendar.getTime()));
             }
