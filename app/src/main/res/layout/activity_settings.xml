@@ -45,7 +45,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="28dp"
                 android:layout_marginRight="10dp"
-                android:text="A scheduler for Unabridged, Augustana's English Club. Select an event from the list in order to see more information about it. Authorized users sign in for editing privileges.\n\nWritten by Maegan Patterson for CSC 490\n\nAdvised by Dr. Stonedahl\n\nIcon from clipart-library.com"
+                android:text="A scheduler for Unabridged, Augustana's English Club. Select an event from the list in order to see more information about it. Authorized users sign in for editing privileges.\n\nWritten by Maegan Patterson for CSC 490\n\nAdvised by Dr. Stonedahl\n\nIcon from clipart-library.com\n\nUnabridged banner image created by Chris Sanders-Ring"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView4" />
